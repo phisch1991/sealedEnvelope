@@ -1,0 +1,30 @@
+@startuml
+
+participant DataOwner
+participant DataRecipient
+participant EnvelopeServer
+
+group Transfer
+DataOwner -> DataOwner: Enter data for envelope
+DataOwner -> EnvelopeServer: Request seal
+EnvelopeServer --> DataOwner: Seal
+DataOwner -> DataOwner: Seal envelope and persist seal identifier
+DataOwner -> DataRecipient: Transfer envelope (e. g. via QR)
+DataRecipient -> DataRecipient: Persist envelope
+DataRecipient -> EnvelopeServer: Claim Seal (if authenticated:\n bind seal to DataRecipient)
+EnvelopeServer --> DataRecipient: Confirm seal claim
+end
+
+group Check seal
+DataOwner -> EnvelopeServer: Request seal status
+EnvelopeServer --> DataOwner: Seal status
+end
+
+group Unseal
+DataRecipient -> EnvelopeServer: Request unseal information
+EnvelopeServer -> EnvelopeServer: Check expiry and\n update seal status
+EnvelopeServer --> DataRecipient: Unseal information
+end
+
+
+@enduml
