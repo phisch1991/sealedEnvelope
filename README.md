@@ -18,6 +18,10 @@ To get an overall understanding of the process, the following bullet points desc
 - The *SealedEnvelope server* generates new secrets on *data owner* request. This happens for each data transaction. The secrets are stored along with an identifier. The server furthermore hands over secrets to registered and authenticated *data recipients*. Afterwards, the status of the secret will be changed to "revealed" and the *data owner* can check this (pull approach).
 - The *data recipient* (e. g. a restaurant owner) receives the *data owners* encrypted data (e. g. by scanning the QR code) and persists the content. As only the values are encrypted, he can verify that the structure of the received data (keys) is valid. If the *data recipient* needs to decrypt the data, he retrieves the secret from the *SealedEnvelope server* (registration required) by the identifier he knows and can decrypt the data for further use. 
 
+The following diagram demonstrates the process:
+
+![Sequence diagram](./doc/sequence-diagram.png)
+
 ## Modes
 There are two modes for exchanging information:
 
