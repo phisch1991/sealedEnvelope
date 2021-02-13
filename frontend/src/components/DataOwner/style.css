@@ -51,3 +51,7 @@
 .text {
   color: white;
 }
+
+.caution {
+  color: red;
+}

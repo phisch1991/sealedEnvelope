@@ -20,6 +20,8 @@ function DataOwner() {
   const [encryptedDataString, setEncryptedDataString] = useState('')
   const [payload] = useState('some test data')
   const [label] = useState('my front door pin')
+  const [unsealedEnvelopes, setUnsealedEnvelopes] = useState([])
+
 
 
   useEffect(async () => {
@@ -34,9 +36,24 @@ function DataOwner() {
           label
         }
         setEncryptedDataString(JSON.stringify(encryptData(input, envelope.secret, envelope.salt)))
-        await sealStore.setItem(envelope.id, { status: 'sealed' })
+        await sealStore.setItem(envelope.id, { label })
+        await findUnsealedEnvelopes()
       })
   }, [])
+
+  const findUnsealedEnvelopes = async () => {
+    const envelopes = []
+    const sealIds = await sealStore.keys()
+    for (let sealId of sealIds) {
+      let seal = await (await fetch(`http://localhost:4000/seals/${sealId}`)).json()
+      if (seal.status != 'sealed') {
+        let item = await sealStore.getItem(sealId)
+        envelopes.push(item.label)
+      }
+    }
+    setUnsealedEnvelopes(envelopes)
+
+  }
 
   return (
     <div className="flip-card">
@@ -55,6 +72,9 @@ function DataOwner() {
           <p>{payload}</p>
         </div>
       </div>
+      {unsealedEnvelopes.length > 0 && <p className="caution">Achtung, es wurde(n) {unsealedEnvelopes.length} Brief(e) von dir geöffnet:</p>}
+      {unsealedEnvelopes.map((label, index) => <p className="caution">{index + 1}: {label}</p>)}
+
     </div>
   );
 }
