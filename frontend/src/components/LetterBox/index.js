@@ -23,7 +23,7 @@ const decrypt = (data, secret, salt) => {
     schema: data.schema,
     payload: ''
   }
-    decryptedData.payload = CryptoJS.AES.decrypt(data.payload, secret).toString(CryptoJS.enc.Utf8).slice(0, -salt.length)
+  decryptedData.payload = CryptoJS.AES.decrypt(data.payload, secret).toString(CryptoJS.enc.Utf8).slice(0, -salt.length)
 
   return decryptedData
 }
@@ -31,8 +31,8 @@ const decrypt = (data, secret, salt) => {
 function LetterBox() {
   const classes = useStyles();
 
-  const [keys, setKeys] = useState([])
-  const [unsealedEnvelope, setUnsealedEnvelope] = useState({payload: ''})
+  const [envelopes, setEnvelopes] = useState([])
+  const [unsealedEnvelope, setUnsealedEnvelope] = useState({ payload: '' })
 
   const [open, setOpen] = React.useState(false);
   const [modalStyle] = React.useState({
@@ -41,21 +41,35 @@ function LetterBox() {
   });
 
   useEffect(async () => {
-    setKeys(await inboxStore.keys());
+    await reloadEnvelopes()
   }, []);
 
   const unsealEnvelope = async (key) => {
     const data = JSON.parse(await inboxStore.getItem(key))
     fetch(`http://localhost:4000/seals/${data.id}?mode=unseal`)
-    .then(res => {
-      return res.json()
-    })
-    .then(seal => {
-      setUnsealedEnvelope(decrypt(data, seal.secret, seal.salt))
-    console.log(unsealedEnvelope)
-    setOpen(true)
-    })
-    
+      .then(res => {
+        return res.json()
+      })
+      .then(seal => {
+        setUnsealedEnvelope(decrypt(data, seal.secret, seal.salt))
+        console.log(unsealedEnvelope)
+        setOpen(true)
+      })
+
+  }
+
+  const reloadEnvelopes = async () => {
+    const envelopes = []
+    for (let key of (await inboxStore.keys())) {
+      const item = await inboxStore.getItem(key)
+      envelopes.push(JSON.parse(item))
+    }
+    setEnvelopes(envelopes)
+  }
+
+  const deleteEnvelope = async (key) => {
+    await inboxStore.removeItem(key)
+    await reloadEnvelopes()
   }
 
   const handleClose = () => {
@@ -65,8 +79,15 @@ function LetterBox() {
   return (
     <div>
       <div>
-        Deine Inbox ({keys.length}):
-      {keys.map(key => <div className="item"><p>{key}</p><Button onClick={() => unsealEnvelope(key)} color="secondary">Entsiegeln</Button></div>)}
+        Deine Inbox ({envelopes.length}):
+      {envelopes.map(envelope => (
+        <div className="item">
+          <p>{envelope.label}</p>
+          <Button onClick={() => unsealEnvelope(envelope.id)} color="secondary">Entsiegeln</Button>
+          <Button onClick={() => deleteEnvelope(envelope.id)} color="secondary">Löschen</Button>
+        </div>
+      ))
+        }
       </div>
       <Modal
         open={open}
@@ -78,9 +99,8 @@ function LetterBox() {
           <h2>Inhalt</h2>
           <p>
             Unverschlüsselte Nachricht:</p>
-            <p> {unsealedEnvelope.payload}
-      </p>
-
+          <p> {unsealedEnvelope.payload}
+          </p>
         </div>
       </Modal>
     </div>

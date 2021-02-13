@@ -9,6 +9,7 @@ function DataOwner() {
   const encryptData = (plaintextData, secret, salt) => {
     const encryptedData = {
       id: plaintextData.id,
+      label: plaintextData.label,
       schema: plaintextData.schema,
       payload: ''
     }
@@ -18,6 +19,8 @@ function DataOwner() {
 
   const [encryptedDataString, setEncryptedDataString] = useState('')
   const [payload] = useState('some test data')
+  const [label] = useState('my front door pin')
+
 
   useEffect(async () => {
     fetch('http://localhost:4000/seals', { method: 'POST' })
@@ -27,7 +30,8 @@ function DataOwner() {
       .then(async envelope => {
         let input = {
           id: envelope.id,
-          payload
+          payload,
+          label
         }
         setEncryptedDataString(JSON.stringify(encryptData(input, envelope.secret, envelope.salt)))
         await sealStore.setItem(envelope.id, { status: 'sealed' })
