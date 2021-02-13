@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
 import QrReader from 'react-qr-reader';
+import { inboxStore } from '../../lib/db'
 
 function DataRecipient() {
 
-  const [result, setResult] = useState('No result')
+  const [scanned, setScanned] = useState(false)
   const [camera, setCamera] = useState('environment')
 
-
-  const handleScan = data => {
+  const handleScan = async data => {
     if (data) {
-      setResult(data)
+      const parsedData = JSON.parse(data)
+      await inboxStore.setItem(parsedData.id, data)
+      setScanned(true)
     }
   }
 
@@ -28,7 +30,7 @@ function DataRecipient() {
 
   return (
     <div>
-      <div onClick={switchCamera}>
+      {!scanned && <div onClick={switchCamera}>
         <QrReader onClick={switchCamera}
           delay={300}
           onError={handleError}
@@ -36,7 +38,8 @@ function DataRecipient() {
           facingMode={camera}
           style={{ width: '290px' }}
         />
-      </div>
+      </div>}
+      {scanned && <p>Erfolgreich gespeichert!</p>}
     </div>
   );
 }

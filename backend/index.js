@@ -3,29 +3,36 @@ var cors = require('cors')
 var uuid = require('uuid')
 var crypto = require('crypto')
 
-const envelopes = []
+const seals = []
 
 var app = express();
 const PORT = 4000;
 
 app.use(cors());
 
-app.get("/envelopes", (req, res, next) => {
-    res.json(envelopes);
+app.get("/seals", (req, res, next) => {
+    res.json(seals);
 });
 
-app.get("/envelopes/:envelopeId", (req, res, next) => {
-    res.json(envelopes.filter(envelope => envelope.id == req.params.envelopeId)[0]);
+app.get("/seals/:id", (req, res, next) => {
+    const unseal = req.query.mode === 'unseal' ? true : false;
+    const sealIndex = seals.findIndex(seal => seal.id === req.params.id)
+    if (unseal) {
+        seals[sealIndex].status = 'unsealed'
+        res.json(seals[sealIndex])
+    } else {
+        res.json({ id: seals[sealIndex].id, status: seals[sealIndex].status })
+    }
 });
 
-app.post("/envelopes", (req, res, next) => {
-    let envelope = {
+app.post("/seals", (req, res) => {
+    const envelope = {
         id: uuid.v4(),
-        status: 'unrevealed',
+        status: 'sealed',
         secret: uuid.v4(),
         salt: crypto.pseudoRandomBytes(32).toString('hex')
     }
-    envelopes.push(envelope)
+    seals.push(envelope)
     res.status(201).json(envelope);
 });
 

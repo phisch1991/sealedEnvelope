@@ -6,6 +6,7 @@ import React from 'react';
 import { AppBar, Tabs, Tab, Box, Typography } from '@material-ui/core'
 import DataOwner from '../DataOwner'
 import DataRecipient from '../DataRecipient'
+import LetterBox from '../LetterBox'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -82,7 +83,7 @@ function MainScreen(props) {
           <DataRecipient />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          Coming soon...
+          <LetterBox />
         </TabPanel>
       </div>
     </div>

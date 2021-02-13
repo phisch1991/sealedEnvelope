@@ -2,6 +2,7 @@ import './style.css';
 import CryptoJS from 'crypto-js';
 import { useState, useEffect } from 'react';
 import QRCode from 'qrcode.react';
+import { sealStore } from '../../lib/db'
 
 function DataOwner() {
 
@@ -9,31 +10,27 @@ function DataOwner() {
     const encryptedData = {
       id: plaintextData.id,
       schema: plaintextData.schema,
-      payload: {}
+      payload: ''
     }
-    Object.keys(plaintextData.payload).forEach(key => {
-      encryptedData.payload[key] = CryptoJS.AES.encrypt(JSON.stringify(plaintextData.payload[key]) + salt, secret).toString()
-    })
+    encryptedData.payload = CryptoJS.AES.encrypt(plaintextData.payload + salt, secret).toString()
     return encryptedData
   }
 
   const [encryptedDataString, setEncryptedDataString] = useState('')
-  const [payload] = useState({
-    firstname: "Philipp",
-    lastname: "Schneider"
-  })
+  const [payload] = useState('some test data')
 
-  useEffect(() => {
-    fetch('http://localhost:4000/envelopes', { method: 'POST' })
+  useEffect(async () => {
+    fetch('http://localhost:4000/seals', { method: 'POST' })
       .then(res => {
         return res.json()
       })
-      .then(envelope => {
+      .then(async envelope => {
         let input = {
           id: envelope.id,
           payload
         }
         setEncryptedDataString(JSON.stringify(encryptData(input, envelope.secret, envelope.salt)))
+        await sealStore.setItem(envelope.id, { status: 'sealed' })
       })
   }, [])
 
@@ -51,8 +48,7 @@ function DataOwner() {
             /> || <p className="text">Loading...</p>}
         </div>
         <div className="flip-card-back">
-          <p>Vorname: {payload.firstname}</p>
-          <p>Nachname: {payload.lastname}</p>
+          <p>{payload}</p>
         </div>
       </div>
     </div>
