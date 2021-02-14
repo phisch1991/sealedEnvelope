@@ -19,7 +19,7 @@ app.get("/seals", (req, res, next) => {
 });
 
 app.get("/seals/:id", (req, res, next) => {
-    const unseal: boolean = req.query.mode === 'unseal' ? true : false;
+    const unseal: boolean = req.query.action === 'unseal' ? true : false;
     const sealIndex: number = seals.findIndex(seal => seal.id === req.params.id)
     if (sealIndex < 0) {
         res.status(404).json({error: 'Not found'})

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Button } from '@material-ui/core';
 import QrReader from 'react-qr-reader';
-import { inboxStore } from '../../lib/db'
+import { saveEnvelope } from '../../lib/envelopes';
 
 function DataRecipient() {
 
@@ -10,8 +9,7 @@ function DataRecipient() {
 
   const handleScan = async data => {
     if (data) {
-      const parsedData = JSON.parse(data)
-      await inboxStore.setItem(parsedData.id, data)
+      await saveEnvelope(data)
       setScanned(true)
     }
   }
