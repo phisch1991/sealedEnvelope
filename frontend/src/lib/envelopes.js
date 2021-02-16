@@ -3,13 +3,18 @@ import { sealStore, inboxStore } from './db'
 import { encrypt } from './crypto'
 
 
-const getLabelsOfUnsealedEnvelopes = async () => {
+const getNewlyUnsealedEnvelopes = async () => {
     const labels = []
     const sealIds = await sealStore.keys()
     for (let sealId of sealIds) {
         if (await getSealStatus(sealId) != 'sealed') {
             let item = await sealStore.getItem(sealId)
-            labels.push(item.label)
+            if (!item.acknowledged) {
+                labels.push({
+                    label: item.label,
+                    id: item.id
+                })
+            }
         }
     }
     return labels
@@ -21,7 +26,7 @@ const deleteEnvelope = async (key) => {
 
 const sealEnvelope = async (payload, label) => {
     const seal = await getNewSeal()
-    await sealStore.setItem(seal.id, { label })
+    await sealStore.setItem(seal.id, { id: seal.id, label, acknowledged: false })
     return {
         id: seal.id,
         payload: encrypt(payload, seal.secret, seal.salt),
@@ -47,7 +52,7 @@ const saveEnvelope = async (envelope) => {
 }
 
 export {
-    getLabelsOfUnsealedEnvelopes,
+    getNewlyUnsealedEnvelopes,
     sealEnvelope,
     deleteEnvelope,
     getAllEnvelopes,

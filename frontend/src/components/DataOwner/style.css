@@ -55,3 +55,10 @@
 .caution {
   color: red;
 }
+
+.outer {
+  margin: auto;
+  display: inline-block;
+  align-items: center;
+  align-content: center;
+}

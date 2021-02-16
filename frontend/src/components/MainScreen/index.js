@@ -1,15 +1,36 @@
 import logo from '../../logo.svg';
 import './style.css';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Tabs, Tab, Box, Typography } from '@material-ui/core'
 import DataOwner from '../DataOwner'
 import DataRecipient from '../DataRecipient'
 import LetterBox from '../LetterBox'
+import { Snackbar, IconButton } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close';
+import { getNewlyUnsealedEnvelopes } from '../../lib/envelopes'
+import { sealStore } from '../../lib/db'
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
+
+  const [unsealedEnvelopes, setUnsealedEnvelopes] = useState([])
+  const handleClose = async (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    for (let envelope of unsealedEnvelopes) {
+      let item = await sealStore.getItem(envelope.id)
+      item.acknowledged = true
+      await sealStore.setItem(item.id, item)
+      setUnsealedEnvelopes([])
+    }
+  };
+  useEffect(async () => {
+    setUnsealedEnvelopes(await getNewlyUnsealedEnvelopes())
+  }, [])
+
 
   return (
     <div
@@ -20,11 +41,27 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        
+
         <div className="centered">
-         {children}
+          {children}
         </div>
       )}
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={unsealedEnvelopes.length > 0}
+        onClose={handleClose}
+        message={`Umschläge von dir wurden geöffnet: ${unsealedEnvelopes.map(envelope => envelope.label)}`}
+        action={
+          <React.Fragment>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </div>
   );
 }
@@ -41,19 +78,6 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-  },
-  tabpanel: {
-
-    marginLeft: "auto",
-    marginRight: "auto"
-
-}
-}));
 
 function MainScreen(props) {
 
