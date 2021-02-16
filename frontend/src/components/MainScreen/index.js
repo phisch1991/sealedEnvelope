@@ -7,7 +7,7 @@ import DataOwner from '../DataOwner'
 import DataRecipient from '../DataRecipient'
 import LetterBox from '../LetterBox'
 import { Snackbar, IconButton } from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from '@material-ui/icons/Check';
 import { getNewlyUnsealedEnvelopes } from '../../lib/envelopes'
 import { sealStore } from '../../lib/db'
 
@@ -28,6 +28,7 @@ function TabPanel(props) {
     }
   };
   useEffect(async () => {
+    // TODO: Backend calls are currently executed multiple times without additional use
     setUnsealedEnvelopes(await getNewlyUnsealedEnvelopes())
   }, [])
 
@@ -57,7 +58,7 @@ function TabPanel(props) {
         action={
           <React.Fragment>
             <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-              <CloseIcon fontSize="small" />
+              <CheckIcon fontSize="small" />
             </IconButton>
           </React.Fragment>
         }

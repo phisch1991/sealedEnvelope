@@ -11,15 +11,17 @@ function DataOwner() {
   const [label, setLabel] = useState('')
 
   const handleSubmit = async () => {
-    const sealedEnvelope = await sealEnvelope(payload, label)
-    setEncryptedDataString(JSON.stringify(sealedEnvelope))
+    if (payload && label) {
+      const sealedEnvelope = await sealEnvelope(payload, label)
+      setEncryptedDataString(JSON.stringify(sealedEnvelope))
+    }
   }
 
   if (!encryptedDataString) {
     return (
-      <form className="form" noValidate autoComplete="off">
-        <TextField id="label" label="Label" onChange={event => setLabel(event.target.value)} />
-        <TextField id="message" label="Nachricht" onChange={event => setPayload(event.target.value)} />
+      <form noValidate autoComplete="off">
+        <TextField required id="label" label="Label" onChange={event => setLabel(event.target.value)} /><br />
+        <TextField required id="message" label="Nachricht" onChange={event => setPayload(event.target.value)} /><br /><br />
         <Button onClick={handleSubmit}>Versiegeln</Button>
       </form>
     )

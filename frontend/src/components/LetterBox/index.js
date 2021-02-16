@@ -11,8 +11,6 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     width: 150,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
 }));
@@ -27,6 +25,8 @@ function LetterBox() {
   const [modalStyle] = React.useState({
     top: '100px',
     margin: 'auto',
+    borderRadius: '20px',
+    border: ''
   });
 
   useEffect(async () => {
@@ -55,8 +55,8 @@ function LetterBox() {
       {envelopes.map(envelope => (
         <div className="item">
           <p>{envelope.label}</p>
-          <Button onClick={() => unsealEnvelope(envelope.id)} color="secondary">Entsiegeln</Button>
-          <Button onClick={() => deleteEnvelope(envelope.id) && reloadEnvelopes()} color="secondary">Löschen</Button>
+          <Button onClick={() => unsealEnvelope(envelope.id)}>Entsiegeln</Button>
+          <Button onClick={() => deleteEnvelope(envelope.id) && reloadEnvelopes()}>Löschen</Button>
         </div>
       ))
         }
@@ -68,7 +68,6 @@ function LetterBox() {
         aria-describedby="simple-modal-description"
       >
         <div style={modalStyle} className={classes.paper}>
-          <h2>Inhalt</h2>
           <p>
             Unverschlüsselte Nachricht:</p>
           <p> {unsealedPayload}

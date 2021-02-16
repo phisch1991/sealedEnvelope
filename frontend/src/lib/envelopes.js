@@ -7,9 +7,9 @@ const getNewlyUnsealedEnvelopes = async () => {
     const labels = []
     const sealIds = await sealStore.keys()
     for (let sealId of sealIds) {
-        if (await getSealStatus(sealId) != 'sealed') {
-            let item = await sealStore.getItem(sealId)
-            if (!item.acknowledged) {
+        let item = await sealStore.getItem(sealId)
+        if (!item.acknowledged) {
+            if (await getSealStatus(sealId) != 'sealed') {
                 labels.push({
                     label: item.label,
                     id: item.id
