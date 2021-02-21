@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import QrReader from 'react-qr-reader';
 import { saveEnvelope } from '../../lib/envelopes';
+import { SharedSnackbarContext } from '../../contexts/SnackbarProvider';
 
 function DataRecipient() {
-
+  const { openSnackbar } = useContext(SharedSnackbarContext)
   const [scanned, setScanned] = useState(false)
   const [camera, setCamera] = useState('environment')
 
   const handleScan = async data => {
     if (data) {
       await saveEnvelope(data)
-      setScanned(true)
+      openSnackbar('Umschlag erfolgreich gespeichert')
     }
   }
 
@@ -28,7 +29,7 @@ function DataRecipient() {
 
   return (
     <div>
-      {!scanned && <div onClick={switchCamera}>
+      <div onClick={switchCamera}>
         <QrReader onClick={switchCamera}
           delay={300}
           onError={handleError}
@@ -36,8 +37,7 @@ function DataRecipient() {
           facingMode={camera}
           style={{ width: '290px' }}
         />
-      </div>}
-      {scanned && <p>Erfolgreich gespeichert!</p>}
+      </div>
     </div>
   );
 }

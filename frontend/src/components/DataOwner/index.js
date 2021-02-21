@@ -1,10 +1,12 @@
 import './style.css';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import QRCode from 'qrcode.react';
 import { TextField, Button } from '@material-ui/core'
 import { sealEnvelope } from '../../lib/envelopes'
+import { SharedSnackbarContext } from '../../contexts/SnackbarProvider';
 
 function DataOwner() {
+  const { openSnackbar } = useContext(SharedSnackbarContext)
 
   const [encryptedDataString, setEncryptedDataString] = useState('')
   const [payload, setPayload] = useState('')
@@ -14,6 +16,7 @@ function DataOwner() {
     if (payload && label) {
       const sealedEnvelope = await sealEnvelope(payload, label)
       setEncryptedDataString(JSON.stringify(sealedEnvelope))
+      openSnackbar('Umschlag erfolgreich versiegelt')
     }
   }
 

@@ -1,35 +1,30 @@
 import logo from '../../logo.svg';
 import './style.css';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { AppBar, Tabs, Tab, Box, Typography } from '@material-ui/core'
 import DataOwner from '../DataOwner'
 import DataRecipient from '../DataRecipient'
 import LetterBox from '../LetterBox'
-import { Snackbar, IconButton } from '@material-ui/core'
-import CheckIcon from '@material-ui/icons/Check';
 import { getNewlyUnsealedEnvelopes } from '../../lib/envelopes'
 import { sealStore } from '../../lib/db'
-
+import { SharedSnackbarContext } from '../../contexts/SnackbarProvider';
 
 function TabPanel(props) {
+  const { openSnackbar } = useContext(SharedSnackbarContext)
   const { children, value, index, ...other } = props;
 
-  const [unsealedEnvelopes, setUnsealedEnvelopes] = useState([])
-  const handleClose = async (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    for (let envelope of unsealedEnvelopes) {
-      let item = await sealStore.getItem(envelope.id)
-      item.acknowledged = true
-      await sealStore.setItem(item.id, item)
-      setUnsealedEnvelopes([])
-    }
-  };
   useEffect(async () => {
     // TODO: Backend calls are currently executed multiple times without additional use
-    setUnsealedEnvelopes(await getNewlyUnsealedEnvelopes())
+    const envelopes = await getNewlyUnsealedEnvelopes()
+    if (envelopes.length > 0) {
+      openSnackbar('Umschläge geöffnet: ' + JSON.stringify(envelopes.map(envelope => envelope.label).join(', ')))
+      for (let envelope of envelopes) {
+        let item = await sealStore.getItem(envelope.id)
+        item.acknowledged = true
+        await sealStore.setItem(item.id, item)
+      }
+    }
   }, [])
 
 
@@ -47,22 +42,6 @@ function TabPanel(props) {
           {children}
         </div>
       )}
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={unsealedEnvelopes.length > 0}
-        onClose={handleClose}
-        message={`Umschläge von dir wurden geöffnet: ${unsealedEnvelopes.map(envelope => envelope.label)}`}
-        action={
-          <React.Fragment>
-            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-              <CheckIcon fontSize="small" />
-            </IconButton>
-          </React.Fragment>
-        }
-      />
     </div>
   );
 }

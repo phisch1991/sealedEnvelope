@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './style.css'
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Modal } from '@material-ui/core'
 import { decrypt } from '../../lib/crypto'
 import { unsealInfo } from '../../lib/serverAdapter'
 import { deleteEnvelope, getAllEnvelopes, getEnvelopeById } from '../../lib/envelopes'
+import { SharedSnackbarContext } from '../../contexts/SnackbarProvider';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -16,6 +17,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function LetterBox() {
+  const { openSnackbar } = useContext(SharedSnackbarContext)
+
   const classes = useStyles();
 
   const [envelopes, setEnvelopes] = useState([])
@@ -56,7 +59,7 @@ function LetterBox() {
         <div className="item">
           <p>{envelope.label}</p>
           <Button onClick={() => unsealEnvelope(envelope.id)}>Entsiegeln</Button>
-          <Button onClick={() => deleteEnvelope(envelope.id) && reloadEnvelopes()}>Löschen</Button>
+          <Button onClick={() => deleteEnvelope(envelope.id) && reloadEnvelopes() && openSnackbar('Umschlag erfolgreich gelöscht')}>Löschen</Button>
         </div>
       ))
         }

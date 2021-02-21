@@ -1,9 +1,12 @@
 import MainScreen from './components/MainScreen'
+import { SharedSnackbarProvider } from './contexts/SnackbarProvider';
 
 function App() {
     return (
         <main>
-            <MainScreen />
+            <SharedSnackbarProvider>
+                <MainScreen />
+            </SharedSnackbarProvider>
         </main>
     )
 }
