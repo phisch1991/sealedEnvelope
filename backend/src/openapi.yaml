@@ -1,0 +1,109 @@
+openapi: 3.0.0
+info:
+  title: sealedEnvelope backend
+  version: '1.0'
+  description: This is the backend api for sealedEnvelope.
+servers:
+  - url: 'http://localhost:4000/api/v1'
+paths:
+  /seals:
+    get:
+      summary: Get a list of all seals
+      operationId: getSeals
+      x-eov-operation-handler: handlers/seals
+      tags:
+        - seals
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Seal'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      summary: Create a new seal
+      operationId: createSeal
+      x-eov-operation-handler: handlers/seals
+      tags:
+        - seals
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seal'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /seals/{id}:
+    get:
+      summary: Get a seal by its id
+      operationId: getSeal
+      x-eov-operation-handler: handlers/seals
+      tags:
+        - seals
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: action
+          in: query
+          schema:
+            type: string
+            enum:
+              - unseal
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seal'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+components:
+  responses:
+    ErrorResponse:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Seal:
+      title: Seal
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          type: string
+          enum:
+            - sealed
+            - unsealed
+          readOnly: true
+        secret:
+          type: string
+          readOnly: true
+        salt:
+          type: string
+          readOnly: true
+    Error:
+      title: Error
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string

@@ -1,6 +1,11 @@
-export default interface Seal {
-    id: string,
-    status: string,
-    secret?: string,
-    salt?: string
+export interface Seal {
+  id: string
+  status: IStatus
+  secret?: string
+  salt?: string
+}
+
+export enum IStatus {
+  SEALED = 'sealed',
+  UNSEALED = 'unsealed',
 }
