@@ -1,11 +1,13 @@
 import express from 'express'
 import cors from 'cors'
-
+import * as dotenv from 'dotenv'
 import winston from 'winston'
 import * as OpenApiValidator from 'express-openapi-validator'
 import path from 'path'
 
 const logger = winston.createLogger()
+
+dotenv.config({ path: __dirname + '/.env' })
 
 const app = express()
 const PORT: number = 4000
@@ -16,7 +18,7 @@ app.use(
   OpenApiValidator.middleware({
     apiSpec: './src/openapi.yaml',
     validateRequests: true,
-    validateResponses: true,
+    validateResponses: false,
     operationHandlers: path.join(__dirname),
   })
 )
