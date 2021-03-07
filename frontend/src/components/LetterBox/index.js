@@ -1,11 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react'
 import './style.css'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 import { Button, Modal } from '@material-ui/core'
 import { decrypt } from '../../lib/crypto'
 import { unsealInfo } from '../../lib/serverAdapter'
-import { deleteEnvelope, getAllEnvelopes, getEnvelopeById } from '../../lib/envelopes'
-import { SharedSnackbarContext } from '../../contexts/SnackbarProvider';
+import { useTranslation } from 'react-i18next'
+import {
+  deleteEnvelope,
+  getAllEnvelopes,
+  getEnvelopeById,
+} from '../../lib/envelopes'
+import { SharedSnackbarContext } from '../../contexts/SnackbarProvider'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -14,27 +19,28 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(2, 4, 3),
   },
-}));
+}))
 
 function LetterBox() {
   const { openSnackbar } = useContext(SharedSnackbarContext)
+  const { t } = useTranslation()
 
-  const classes = useStyles();
+  const classes = useStyles()
 
   const [envelopes, setEnvelopes] = useState([])
   const [unsealedPayload, setUnsealedPayload] = useState('')
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
   const [modalStyle] = React.useState({
     top: '100px',
     margin: 'auto',
     borderRadius: '20px',
-    border: ''
-  });
+    border: '',
+  })
 
   useEffect(async () => {
     await reloadEnvelopes()
-  }, []);
+  }, [])
 
   const unsealEnvelope = async (key) => {
     const envelope = await getEnvelopeById(key)
@@ -54,15 +60,24 @@ function LetterBox() {
   return (
     <div>
       <div>
-        Deine Inbox ({envelopes.length}):
-      {envelopes.map(envelope => (
-        <div className="item">
-          <p>{envelope.label}</p>
-          <Button onClick={() => unsealEnvelope(envelope.id)}>Entsiegeln</Button>
-          <Button onClick={() => deleteEnvelope(envelope.id) && reloadEnvelopes() && openSnackbar('Umschlag erfolgreich gelöscht')}>Löschen</Button>
-        </div>
-      ))
-        }
+        {t('inbox')} ({envelopes.length}):
+        {envelopes.map((envelope) => (
+          <div className="item">
+            <p>{envelope.label}</p>
+            <Button onClick={() => unsealEnvelope(envelope.id)}>
+              {t('unseal')}
+            </Button>
+            <Button
+              onClick={() =>
+                deleteEnvelope(envelope.id) &&
+                reloadEnvelopes() &&
+                openSnackbar(t('envelopeDeleted'))
+              }
+            >
+              {t('delete')}
+            </Button>
+          </div>
+        ))}
       </div>
       <Modal
         open={open}
@@ -71,14 +86,12 @@ function LetterBox() {
         aria-describedby="simple-modal-description"
       >
         <div style={modalStyle} className={classes.paper}>
-          <p>
-            Unverschlüsselte Nachricht:</p>
-          <p> {unsealedPayload}
-          </p>
+          <p>{t('unsealedMessage')}</p>
+          <p> {unsealedPayload}</p>
         </div>
       </Modal>
     </div>
-  );
+  )
 }
 
-export default LetterBox;
+export default LetterBox

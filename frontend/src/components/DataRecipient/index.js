@@ -1,21 +1,22 @@
-import React, { useState, useContext } from 'react';
-import QrReader from 'react-qr-reader';
-import { saveEnvelope } from '../../lib/envelopes';
-import { SharedSnackbarContext } from '../../contexts/SnackbarProvider';
+import React, { useState, useContext } from 'react'
+import QrReader from 'react-qr-reader'
+import { saveEnvelope } from '../../lib/envelopes'
+import { SharedSnackbarContext } from '../../contexts/SnackbarProvider'
+import { useTranslation } from 'react-i18next'
 
 function DataRecipient() {
   const { openSnackbar } = useContext(SharedSnackbarContext)
-  const [scanned, setScanned] = useState(false)
   const [camera, setCamera] = useState('environment')
+  const { t } = useTranslation()
 
-  const handleScan = async data => {
+  const handleScan = async (data) => {
     if (data) {
       await saveEnvelope(data)
-      openSnackbar('Umschlag erfolgreich gespeichert')
+      openSnackbar(t('envelopeSaved'))
     }
   }
 
-  const handleError = err => {
+  const handleError = (err) => {
     console.error(err)
   }
 
@@ -30,7 +31,8 @@ function DataRecipient() {
   return (
     <div>
       <div onClick={switchCamera}>
-        <QrReader onClick={switchCamera}
+        <QrReader
+          onClick={switchCamera}
           delay={300}
           onError={handleError}
           onScan={handleScan}
@@ -39,7 +41,7 @@ function DataRecipient() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default DataRecipient;
+export default DataRecipient
