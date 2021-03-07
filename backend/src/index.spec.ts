@@ -7,7 +7,7 @@ let should = chai.should()
 describe('Router', function () {
   it('should expose a GET /seals route', function () {
     request(app)
-      .get('/seals')
+      .get('/api/v1/seals')
       .expect('Content-Type', /json/)
       .expect(200)
       .end(function (err: any, res: any) {
@@ -17,7 +17,7 @@ describe('Router', function () {
 
   it('should should expose a POST /seals route ', function () {
     request(app)
-      .post('/seals')
+      .post('/api/v1/seals')
       .expect('Content-Type', /json/)
       .expect(201)
       .end(function (err: any, res: any) {

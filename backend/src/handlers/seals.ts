@@ -1,46 +1,46 @@
 import { v4 } from 'uuid'
 import crypto from 'crypto'
-import knex from 'knex'
-import config from '../db/config/knexfile'
 import { Seal, IStatus } from '../types/seal'
-
-const database = knex(config)
+import {
+  getAllSeals,
+  getSealById,
+  unsealSealById,
+  saveSeal,
+} from '../adapters/seals'
+import { generateSeal } from '../lib/seals'
+import logger from '../lib/logger'
 
 module.exports = {
   getSeals: async (req, res, next) => {
-    const seals: Seal[] = await database('seals').select()
-    res.json(seals)
+    try {
+      res.json(await getAllSeals())
+    } catch (e) {
+      next(e)
+    }
   },
 
   getSeal: async (req, res, next) => {
     const unseal: boolean = req.query.action === 'unseal' ? true : false
     const { id } = req.params
-    if (unseal) {
-      const seal = await database('seals')
-        .where({ id })
-        .update({ status: IStatus.UNSEALED })
-        .returning('*')
-      if (!seal) {
-        res.status(404).json({ error: 'Not found' })
-      }
-      res.json(seal[0])
-    } else {
-      const seal: Seal = await database('seals').where({ id }).first()
-      if (!seal) {
-        res.status(404).json({ error: 'Not found' })
-      }
-      res.json(seal)
+    let seal: Seal
+    try {
+      seal = unseal ? await unsealSealById(id) : await getSealById(id)
+    } catch (e) {
+      next(e)
     }
+    if (!seal) {
+      res.status(404).json({ message: 'Not found' })
+    }
+    res.json(seal)
   },
 
-  createSeal: async (req, res) => {
-    const seal: Seal = {
-      id: v4(),
-      status: IStatus.SEALED,
-      secret: v4(),
-      salt: crypto.pseudoRandomBytes(32).toString('hex'),
+  createSeal: async (req, res, next) => {
+    const seal: Seal = generateSeal()
+    try {
+      await saveSeal(seal)
+    } catch (e) {
+      next(e)
     }
-    await database('seals').insert(seal)
     res.status(201).json(seal)
   },
 }
