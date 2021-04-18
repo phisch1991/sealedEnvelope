@@ -1,0 +1,41 @@
+.App {
+  text-align: center;
+  height: 100%;
+  flex-flow: column;
+  height: 100%;
+  display: flex;
+}
+
+.App-logo {
+  height:250px;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  height: 170px;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding: 10px;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.App-body {
+  background-color: #282c34;
+  overflow: hidden;
+  color: #61DAFB;
+  flex-grow: 1
+}
+
+.centered {
+  display: inline-block;
+  align-content: center;
+  align-items: center;
+  margin: auto;
+  padding: 20px;
+}

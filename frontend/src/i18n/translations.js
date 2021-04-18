@@ -1,0 +1,36 @@
+export default {
+  de: {
+    translation: {
+      send: 'Senden',
+      receive: 'Empfangen',
+      envelopes: 'Briefumschläge',
+      seal: 'Versiegeln',
+      unseal: 'Entsiegeln',
+      delete: 'Löschen',
+      label: 'Label',
+      message: 'Nachricht',
+      unsealedMessage: 'Unverschlüsselte Nachricht',
+      inbox: 'Dein Briefkasten',
+      envelopeSealed: 'Umschlag erfolgreich versiegelt',
+      envelopeDeleted: 'Umschlag erfolgreich gelöscht',
+      envelopeSaved: 'Umschlag erfolgreich gespeichert',
+    },
+  },
+  en: {
+    translation: {
+      send: 'Send',
+      receive: 'Receive',
+      envelopes: 'Envelopes',
+      seal: 'Seal',
+      unseal: 'Unseal',
+      delete: 'Delete',
+      label: 'Label',
+      message: 'Message',
+      unsealedMessage: 'Unsealed message',
+      inbox: 'Your inbox',
+      envelopeSealed: 'Envelope successfully sealed',
+      envelopeDeleted: 'Envelope successfully deleted',
+      envelopeSaved: 'Envelope successfully saved',
+    },
+  },
+}
