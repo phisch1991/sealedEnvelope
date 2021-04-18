@@ -40,7 +40,9 @@ function DataOwner() {
         />
         <br />
         <br />
-        <Button onClick={handleSubmit}>{t('seal')}</Button>
+        <Button id="seal" onClick={handleSubmit}>
+          {t('seal')}
+        </Button>
       </form>
     )
   } else {
@@ -51,6 +53,7 @@ function DataOwner() {
             <div className="flip-card-front">
               {(encryptedDataString != '' && (
                 <QRCode
+                  id="qrcode"
                   value={encryptedDataString}
                   size={290}
                   level={'H'}
@@ -65,7 +68,10 @@ function DataOwner() {
           </div>
         </div>
         <p>
-          <Link href={window.location.origin + '#' + btoa(encryptedDataString)}>
+          <Link
+            id="urlTransfer"
+            href={window.location.origin + '#' + btoa(encryptedDataString)}
+          >
             {t('envelopeUrlTransfer')}
           </Link>
         </p>
