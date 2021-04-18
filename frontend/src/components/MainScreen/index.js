@@ -14,13 +14,15 @@ import { useTranslation } from 'react-i18next'
 function TabPanel(props) {
   const { openSnackbar } = useContext(SharedSnackbarContext)
   const { children, value, index, ...other } = props
+  const { t } = useTranslation()
 
   useEffect(async () => {
     // TODO: Backend calls are currently executed multiple times without additional use
     const envelopes = await getNewlyUnsealedEnvelopes()
     if (envelopes.length > 0) {
       openSnackbar(
-        'Umschläge geöffnet: ' +
+        t('envelopesUnsealed') +
+          ': ' +
           JSON.stringify(envelopes.map((envelope) => envelope.label).join(', '))
       )
       for (let envelope of envelopes) {
@@ -34,7 +36,7 @@ function TabPanel(props) {
       if (encodedEnvelopeToImport) {
         const decodedEnvelopeToImport = atob(encodedEnvelopeToImport)
         console.log(decodedEnvelopeToImport)
-        openSnackbar('Umschlag importiert')
+        openSnackbar(t('envelopeImported'))
         await saveEnvelope(decodedEnvelopeToImport)
       }
     } catch {
