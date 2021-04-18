@@ -6,7 +6,7 @@ import { AppBar, Tabs, Tab, Box, Typography } from '@material-ui/core'
 import DataOwner from '../DataOwner'
 import DataRecipient from '../DataRecipient'
 import LetterBox from '../LetterBox'
-import { getNewlyUnsealedEnvelopes } from '../../lib/envelopes'
+import { getNewlyUnsealedEnvelopes, saveEnvelope } from '../../lib/envelopes'
 import { sealStore } from '../../lib/db'
 import { SharedSnackbarContext } from '../../contexts/SnackbarProvider'
 import { useTranslation } from 'react-i18next'
@@ -28,6 +28,17 @@ function TabPanel(props) {
         item.acknowledged = true
         await sealStore.setItem(item.id, item)
       }
+    }
+    try {
+      const encodedEnvelopeToImport = window.location.hash.replace('#', '')
+      if (encodedEnvelopeToImport) {
+        const decodedEnvelopeToImport = atob(encodedEnvelopeToImport)
+        console.log(decodedEnvelopeToImport)
+        openSnackbar('Umschlag importiert')
+        await saveEnvelope(decodedEnvelopeToImport)
+      }
+    } catch {
+      console.log('Could not decode and/or import envelope.')
     }
   }, [])
 

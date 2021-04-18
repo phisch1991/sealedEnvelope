@@ -14,6 +14,7 @@ export default {
       envelopeSealed: 'Umschlag erfolgreich versiegelt',
       envelopeDeleted: 'Umschlag erfolgreich gelöscht',
       envelopeSaved: 'Umschlag erfolgreich gespeichert',
+      envelopeUrlTransfer: '... oder verschicke diesen Link.',
     },
   },
   en: {
@@ -31,6 +32,7 @@ export default {
       envelopeSealed: 'Envelope successfully sealed',
       envelopeDeleted: 'Envelope successfully deleted',
       envelopeSaved: 'Envelope successfully saved',
+      envelopeUrlTransfer: '... or send this link.',
     },
   },
 }

@@ -1,7 +1,7 @@
 import './style.css'
 import React, { useState, useContext } from 'react'
 import QRCode from 'qrcode.react'
-import { TextField, Button } from '@material-ui/core'
+import { TextField, Button, Link } from '@material-ui/core'
 import { sealEnvelope } from '../../lib/envelopes'
 import { SharedSnackbarContext } from '../../contexts/SnackbarProvider'
 import { useTranslation } from 'react-i18next'
@@ -45,24 +45,31 @@ function DataOwner() {
     )
   } else {
     return (
-      <div className="flip-card">
-        <div className="flip-card-inner">
-          <div className="flip-card-front">
-            {(encryptedDataString != '' && (
-              <QRCode
-                value={encryptedDataString}
-                size={290}
-                level={'H'}
-                includeMargin={true}
-                className="qrcode"
-              />
-            )) || <p className="text">Loading...</p>}
-          </div>
-          <div className="flip-card-back">
-            <p>{payload}</p>
+      <>
+        <div className="flip-card">
+          <div className="flip-card-inner">
+            <div className="flip-card-front">
+              {(encryptedDataString != '' && (
+                <QRCode
+                  value={encryptedDataString}
+                  size={290}
+                  level={'H'}
+                  includeMargin={true}
+                  className="qrcode"
+                />
+              )) || <p className="text">Loading...</p>}
+            </div>
+            <div className="flip-card-back">
+              <p>{payload}</p>
+            </div>
           </div>
         </div>
-      </div>
+        <p>
+          <Link href={window.location.origin + '#' + btoa(encryptedDataString)}>
+            {t('envelopeUrlTransfer')}
+          </Link>
+        </p>
+      </>
     )
   }
 }
