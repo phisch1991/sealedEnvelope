@@ -23,7 +23,7 @@
     "express-openapi-validator": "^4.12.1",
     "knex": "^0.95.1",
     "pg": "^8.5.1",
-    "uuid": "^8.3.2",
+    "uuid": "^11.0.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {
